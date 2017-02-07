@@ -6,16 +6,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name = "Humanoid Bot 0.1.0", group = "Untested")
 public class HumanoidBot extends LinearOpMode{
 
-    DcMotor motorLeft;
-    DcMotor motorRight;
+    private DcMotor motorLeft;
+    private DcMotor motorRight;
 
-    /* Controls:
-    * Dpad Up: Accelerate
-    * Dpad Down: Decrement*/
-    DcMotor motorLegLeft;
-    DcMotor motorLegRight;
+    private DcMotor motorLegLeft;
+    private DcMotor motorLegRight;
 
-    DcMotor motorHeadRotate;
+    private DcMotor motorArmLeft;
+    private DcMotor motorArmRight;
+
+    private DcMotor motorHeadRotate;
 
     /* Some Magic Numbers Defined */
     private final double LEG_POWER = 0.3;
@@ -24,8 +24,15 @@ public class HumanoidBot extends LinearOpMode{
     public void runOpMode(){
         motorLeft = hardwareMap.dcMotor.get("motorLeft");
         motorRight = hardwareMap.dcMotor.get("motorRight");
+
         motorLegLeft = hardwareMap.dcMotor.get("motorLegLeft");
         motorLegRight = hardwareMap.dcMotor.get("motorLegRight");
+
+        motorArmLeft = hardwareMap.dcMotor.get("motorArmLeft");
+        motorArmRight = hardwareMap.dcMotor.get("motorArmRight");
+
+        motorHeadRotate = hardwareMap.dcMotor.get("motorHeadRotate");
+
 
         printMessage("> ", "Ready to Start");
 
@@ -43,15 +50,25 @@ public class HumanoidBot extends LinearOpMode{
                 motorLegRight.setPower(-LEG_POWER);
             }
 
-            if(!gamepad1.dpad_up || !gamepad1.dpad_down){
+            if(!gamepad1.dpad_up && !gamepad1.dpad_down){
                 motorLegLeft.setPower(0);
                 motorLegRight.setPower(0);
             }
 
+            if(gamepad1.left_bumper){
+                motorArmLeft.setPower(-HEAD_POWER);
+            }else if(gamepad1.right_bumper){
+                motorArmLeft.setPower(HEAD_POWER);
+            }
+
+            if(!gamepad1.left_bumper && !gamepad1.right_bumper){
+                motorArmLeft.setPower(0);
+            }
+
             if(gamepad1.left_trigger != 0){
-                motorHeadRotate.setPower(HEAD_POWER);
+                motorArmRight.setPower(-HEAD_POWER);
             }else if(gamepad1.right_trigger != 0){
-                motorHeadRotate.setPower(-HEAD_POWER);
+                motorArmRight.setPower(HEAD_POWER);
             }
 
             if(gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
