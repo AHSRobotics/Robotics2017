@@ -34,8 +34,22 @@ public class HumanRobotFinal extends LinearOpMode{
             motorRight.setPower(-gamepad1.right_stick_y);
 
             // Checking to see if there is some input
+            legs = checkIfDpadPressed();
+            armsUp = checkIfTriggerPressed();
+            armsDown = checkIfBumperPressed();
 
         }
+    }
+
+
+    /**
+     * takes in data gotten from hardware, and then uses that to make everything move based on input
+     * @param legCode string that controls how the legs move
+     * @param armUpCode string that controls how the arms move up
+     * @param armDownCode string that controls how the arms move down
+     */
+    public void setHardware(String legCode, String armUpCode, String armDownCode){
+        
     }
 
 
@@ -119,7 +133,17 @@ public class HumanRobotFinal extends LinearOpMode{
      * to help read ability
      */
     public String checkIfBumperPressed(){
-        return "N";
+        String dataBuff = "";
+
+        if(gamepad1.left_bumper){
+            dataBuff += "L";
+        }
+
+        if(gamepad1.right_bumper){
+            dataBuff += "R";
+        }
+
+        return dataBuff;
     }
 
 
