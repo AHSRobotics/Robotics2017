@@ -17,8 +17,9 @@ public class HumanRobotFinal extends LinearOpMode{
     private DcMotor armMotorLeft;
     private DcMotor armMotorRight;
 
-    private final double defaultSpeed = 0.5; // bot needs to be slower
-    private final double fullSpeed = 1.0;
+    private final double DEFAULT_SPEED= 0.25; // bot needs to be slower
+    private final double FULL_SPEED = 1.0;
+    private final double STOP_SPEED = 0.0;
 
     private boolean variablesInit = false;
 
@@ -49,7 +50,57 @@ public class HumanRobotFinal extends LinearOpMode{
      * @param armDownCode string that controls how the arms move down
      */
     public void setHardware(String legCode, String armUpCode, String armDownCode){
-        
+        char dpadPushed = legCode.charAt(0), dpadDirection = legCode.charAt(1), armUp, armDown;
+
+        armUp = (armUpCode.length() > 1) ? 'B':armUpCode.charAt(0);
+        armDown = (armDownCode.length() > 1) ? 'B':armDownCode.charAt(0);
+
+        String armCode = "T" + armUp + "B" + armDown; // Example "TNBR" = Triggers None Bumpers Right
+
+        setLegs(dpadPushed, dpadDirection);
+        setArms(armCode);
+
+    }
+
+
+    /**
+     * Uses the input code gotten from checkIfDpadPressed() and sets motors accordingly
+     * @param push tells if the dpad is being pushed
+     * @param pushDirection tells which direction the dpad is being pushed
+     * @return exits out of method if there is nothing to work with
+     */
+
+    public void setLegs(char push, char pushDirection){
+        if(push == 'P'){
+            double power = (pushDirection == 'U') ? DEFAULT_SPEED:(-DEFAULT_SPEED); // Setting sign of speed
+            legMotorLeft.setPower(power);
+            legMotorRight.setPower(power);
+        }else if(legMotorLeft.getPower() > 0 || legMotorRight.getPower() > 0){
+            legMotorLeft.setPower(STOP_SPEED);
+            legMotorRight.setPower(STOP_SPEED);
+        }else{
+            return;
+        }
+    }
+
+
+    /**
+     * Uses the input code gotten from the checkIfTriggerPressed() and checkIfBumperPressed()
+     * @param armCode the code that will tell the motors what to do
+     */
+    public void setArms(String armCode){
+        char triggerCode = armCode.charAt(1); // In a code like TRBL the value would be R
+        char bumperCode = armCode.charAt(3);
+
+        if(triggerCode == 'N' && bumperCode == 'N'){
+            armMotorLeft.setPower(STOP_SPEED);
+            armMotorRight.setPower(STOP_SPEED);
+            return;
+        }
+
+        /*
+        * TODO Check if case with no breaks will continue running down the cases
+         */
     }
 
 
@@ -110,6 +161,7 @@ public class HumanRobotFinal extends LinearOpMode{
      * N - Nothing
      *
      * Example "LR" - Left and Right arms need to move
+     * NOTE: Left arm is gone
      *
      * @return the character code that will tell the hardware what to do
      */
@@ -123,6 +175,11 @@ public class HumanRobotFinal extends LinearOpMode{
         if(gamepad1.right_trigger > 0){
             dataBuff += "R";
         }
+
+        if(gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0){
+            dataBuff = "N";
+        }
+
 
         return dataBuff;
     }
@@ -142,6 +199,11 @@ public class HumanRobotFinal extends LinearOpMode{
         if(gamepad1.right_bumper){
             dataBuff += "R";
         }
+
+        if(!gamepad1.left_bumper && !gamepad1.right_bumper){
+            dataBuff = "N";
+        }
+
 
         return dataBuff;
     }
